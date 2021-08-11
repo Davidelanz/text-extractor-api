@@ -1,0 +1,75 @@
+openapi: 3.0.0
+info:
+  title: Text Extractor API
+  version: 2.0.1
+  description: >
+    These APIs simultaneously detect symbol sequences separated by space and perform character recognition and word extraction on such symbol sequences. It uses two different models in order to extract text from images. Inference is done in the following steps:
+      <ol>
+      <li> Detect textboxes with modelplace.ai's <a href="https://modelplace.ai/models/35">Text Spotting Detector</a></li>
+      <li> Recognize text in cropped boxes with  <a href="https://github.com/PaddlePaddle/PaddleOCR">PaddleOCR</a>'s multilingual model </li>
+      </ol>
+      <img width=400px src="https://storage.googleapis.com/static.modelplace.ai/release/model-previews/openvino_text_spotting_detector.gif">
+paths:
+  /extract:
+    post:
+      tags:
+        - Text Extraction
+      summary: Extract text from an image
+      description: >
+        <h3>Supported languages and their abbreviations:</h3>
+        <table>
+        <thead>
+        <tr><th>Language</th><th>Abbreviation</th></tr>
+        </thead>
+        <tbody>
+        <tr><td>Latin (general purpose, less precise)</td><td>"latin"</td></tr>
+        <tr><td>English</td><td>"en"</td></tr>
+        <tr><td>French</td><td>"french"</td></tr>
+        <tr><td>German</td><td>"german"</td></tr>
+        </tbody>
+        </table>
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                input:
+                  type: string
+                  format: binary
+                  description: input image encoded in binary string format
+                lang:
+                  type: string
+                  example: "en"
+                  description: the language for the text to extract (see abbreviations table in the description above)
+                preview:
+                  type: boolean
+                  example: true
+                  default: true
+                  description: please set preview to true when used in swagger ui
+      responses:
+        '200':
+          description: Result Json.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Prediction'
+servers:
+  - url: 'http://local:2375'
+
+security: []
+
+
+components:
+  schemas:
+    Prediction:
+      type: object
+      properties:
+        text:
+          type: array
+          items:
+            properties:
+              word:
+                type: string
+              score:
+                type: number

@@ -1,0 +1,11 @@
+./openvino_text_spotting_detector-0.1.1+cpu-py3-none-any.whl
+Pillow
+flasgger
+flask
+numpy
+opencv-python
+openvino
+paddleocr>=2.0.6
+paddlepaddle
+pycocotools
+requests
